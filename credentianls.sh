@@ -1,5 +1,5 @@
-# Telegram bot name (without beginning '@')
-#BOTNAME="functestbot"
+# Telegram bot name (including the '@' at the beginning)
+#BOTNAME="@functestbot"
 
 # Telegram bot id
 #BOTID="..."
