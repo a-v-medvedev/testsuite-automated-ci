@@ -22,10 +22,13 @@ function send_files_via_functestbot() {
 
 function send_msg_via_functestbot() {
     local oldIFS="$IFS"
-    local markdown=""
-    [ "$2" == "markdown" ] && markdown="-F parse_mode=Markdown"
-    IFS=
-    local msg="$(echo $1 | sed 's/_/\\_/g')"
+    local msg="$1"
+    if [ "$2" == "markdown" ]; then
+        markdown="-F parse_mode=Markdown"
+        local oldIFS="$IFS"
+        IFS=
+        msg="$(echo $1 | sed 's/_/\\_/g')"
+        IFS="$oldIFS"
+    fi
     curl $markdown -F "chat_id=${CHATID}" -F "text=$msg" "https://api.telegram.org/bot${BOTID}/sendMessage" >& /dev/null
-    IFS="$oldIFS"
 }
