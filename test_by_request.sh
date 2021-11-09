@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#source send_via_functestbot.sh
-#source credentials.sh
-#source dotests.sh
-#source application.sh
+source send_via_functestbot.sh
+source credentials.sh
+source dotests.sh
+source application.sh
 
 [ -z "$BOTNAME" ] && echo "BOTNAME variable is not defined in credentials.sh" && exit 1
 [ -z "$BOTID" ] && echo "BOTID variable is not defined in credentials.sh" && exit 1
