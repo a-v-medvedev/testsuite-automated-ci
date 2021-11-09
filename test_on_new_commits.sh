@@ -1,6 +1,6 @@
 #/bin/bash
 
-source send_via_functestbot.sh
+#source send_via_functestbot.sh
 source credentials.sh
 source dotests.sh
 source application.sh
