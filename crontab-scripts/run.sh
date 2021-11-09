@@ -25,18 +25,22 @@ fi
 npaths=$(ls -1d *-automated-ci 2>/dev/null | wc -l)
 path="$PWD"
 scriptwd="$PWD"
-if [ "$npaths" == "1" -a -d *-automated-ci ]; then
-    path=${path}/*-automated-ci
-    cd $path
+if [ "$npaths" == "1" ]; then
+    if [ -d *-automated-ci ]; then
+        path=${path}/*-automated-ci
+        cd $path
+    fi
 fi
 
 BOOTSTRAP_REQUIRED="$HOME/bootstrap_required"
 if [ -f "$BOOTSTRAP_REQUIRED" ]; then
     if [ "$PWD" == $(cat "$BOOTSTRAP_REQUIRED") ]; then
+        set -x
         cd $scriptwd
         [ -x ./bootstrap.sh ] && ./bootstrap.sh
         rm -f "$BOOTSTRAP_REQUIRED"
         cd $path
+        set +x
     fi
 fi
 
