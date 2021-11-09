@@ -25,5 +25,6 @@ mv $0 /tmp/_xxx_bootstrap_sh
 cp testsuite-automated-ci/crontab-scripts/bootstrap.sh .
 
 rm -f ~/lock
+rm -f /tmp/_xxx_bootstrap_sh
 
 
