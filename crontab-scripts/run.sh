@@ -41,13 +41,13 @@ if [ -f "$BOOTSTRAP_REQUIRED" ]; then
         set -x
         cd $scriptwd
         [ -x ./bootstrap.sh ] && ./bootstrap.sh
-        cfg_git=$(git remote -v | awk '{print $2}' | awk -F/ '{ print $(NF) }')
+        cfg_git=$(git remote -v | awk '{print $2}' | head -n1 | awk -F/ '{ print $(NF) }')
         cfg_hash=$(git rev-parse --short HEAD)
         rm -f "$BOOTSTRAP_REQUIRED"
         cd $path
-        ci_git=$(git remote -v | awk '{print $2}' | awk -F/ '{ print $(NF) }')
+        ci_git=$(git remote -v | awk '{print $2}' | head -n1 | awk -F/ '{ print $(NF) }')
         ci_hash=$(git rev-parse --short HEAD)
-        msg="Test system bootstrapped, ${cfg_git}: _${cfg_hash}; ${ci_git}: _${ci_hash}_"
+        msg="Test system bootstrapped, ${cfg_git}: *${cfg_hash}*; ${ci_git}: *${ci_hash}*"
         send_msg_via_functestbot "$msg" "markdown"
         set +x
     fi
