@@ -22,6 +22,13 @@ if [ ! -z "$pid" ]; then
     [ ! -z "$pid" ] && rm -f "$LOCK"
 fi
 
+BOOTSTRAP_REQUIRED="$HOME/bootstrap_required"
+if [ -f "$BOOTSTRAP_REQUIRED" ]; then
+    [ -x ./bootstrap.sh ] && ./bootstrap.sh
+    rm -f "$BOOTSTRAP_REQUIRED"
+fi
+
+
 npaths=$(ls -1d *-automated-ci 2>/dev/null | wc -l)
 if [ "$npaths" == "1" -a -d *-automated-ci ]; then
     path=*-automated-ci

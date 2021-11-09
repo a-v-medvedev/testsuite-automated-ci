@@ -38,6 +38,11 @@ ln=$(echo "$lastm" | filter '"from","last_name"' | tr -d \")
 text=$(echo "$lastm" | filter '"text"' | tr -d \")
 date=$(echo "$lastm" | filter '"date"')
 echo "REQUEST: $(date "+%F %R" --date=@$date), $fn $ln, \"$text\""
+BOOT=$(echo "$text" | awk '{ if ($1 == "/boot") print $2; }')
+if [ ! -z "$BOOT" ]; then
+    touch "$HOME/bootstrap_required"
+    exit 0
+fi
 BRANCH=$(echo "$text" | awk '{ if ($1 == "/test") print $2; }')
 [ -z "$BRANCH" ] && exit 0
 [ "$BRANCH" == "$BOTNAME" ] && BRANCH=$TESTSUITE_DEFAULT_BRANCH

@@ -3,6 +3,8 @@
 [ ! -f credentials.sh ] && echo "credentials.sh file required" && exit 1
 [ ! -f application.sh ] && echo "application.sh file required" && exit 1
 
+[ -d .git ] && git pull
+
 source ./credentials.sh
 
 [ -f testsuite-automated-ci/lasthandledid ] && cp testsuite-automated-ci/lasthandledid .
