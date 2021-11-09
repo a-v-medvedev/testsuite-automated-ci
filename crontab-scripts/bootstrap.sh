@@ -20,6 +20,8 @@ cp application.sh testsuite-automated-ci
 [ -f lasttestedrev ] && cp lasttestedrev testsuite-automated-ci
 
 cp testsuite-automated-ci/crontab-scripts/run.sh .
+rm -f /tmp/_xxx_bootstrap_sh
+mv $0 /tmp/_xxx_bootstrap_sh
 cp testsuite-automated-ci/crontab-scripts/bootstrap.sh .
 
 rm -f ~/lock
