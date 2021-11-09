@@ -21,7 +21,13 @@ if [ ! -z "$pid" ]; then
     done
     [ ! -z "$pid" ] && rm -f "$LOCK"
 fi
-#cd *-automated-ci
+
+npaths=$(ls -1d *-automated-ci 2>/dev/null | wc -l)
+if [ "$npaths" == "1" -a -d *-automated-ci ]; then
+    path=*-automated-ci
+    cd $path
+fi
+
 echo $$ > "$LOCK"
 # Args is: test_by_request.sh or test_on_new_commits.sh -- set one of them in crontab
 ./$1
