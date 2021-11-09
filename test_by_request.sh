@@ -40,7 +40,7 @@ date=$(echo "$lastm" | filter '"date"')
 echo "REQUEST: $(date "+%F %R" --date=@$date), $fn $ln, \"$text\""
 BOOT=$(echo "$text" | awk '{ if ($1 == "/boot") print $2; }')
 if [ ! -z "$BOOT" ]; then
-    touch "$HOME/bootstrap_required"
+    echo "$PWD" > "$HOME/bootstrap_required"
     exit 0
 fi
 BRANCH=$(echo "$text" | awk '{ if ($1 == "/test") print $2; }')
