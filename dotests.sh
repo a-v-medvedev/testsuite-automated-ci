@@ -9,8 +9,8 @@ function build_test_and_report() {
     cd testsuite || exit 1
     ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" >& fulllog.log
     ./testall.sh "$TESTSUITE_SUITES" &>> fulllog.log
-    timestamp=$(grep 'TIMESTAMP: ' fulllog.log | awk '{ print $2 }')
-    tst_revision=$(grep 'REVISION: ' fulllog.log | awk '{ printf "%.7s\n", $2 }')
+    timestamp=$(grep 'TIMESTAMP: ' fulllog.log | awk '{ print $2 }' | head -n1)
+    tst_revision=$(grep 'REVISION: ' fulllog.log | awk '{ printf "%.7s\n", $2 }' | head -n1)
     [ -z "$tst_revision" ] || revision=$tst_revision
     [ -z "$timestamp" ] || mv fulllog.log summary_$timestamp.log
     cd ..

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo ">> application.sh is generic! Edit it or replace with an actual one."
+exit 1
+
 #[ -z "$DNB_GITLAB_USERNAME" ] && echo "DNB_GITLAB_USERNAME variable is not defined in credentials.sh" && exit 1
 #[ -z "$DNB_GITLAB_ACCESS_TOKEN" ] && echo "DNB_GITLAB_ACCESS_TOKEN variable is not defined in credentials.sh" && exit 1
 
