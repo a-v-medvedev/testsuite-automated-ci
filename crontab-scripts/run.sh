@@ -33,6 +33,9 @@ if [ "$npaths" == "1" ]; then
 fi
 
 source send_via_functestbot.sh
+source credentials.sh
+source dotests.sh
+source application.sh
 
 echo $$ > "$LOCK"
 BOOTSTRAP_REQUIRED="$HOME/bootstrap_required"
