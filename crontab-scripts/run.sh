@@ -22,6 +22,9 @@ if [ ! -z "$pid" ]; then
     [ ! -z "$pid" ] && rm -f "$LOCK"
 fi
 
+source credentials.sh
+source application.sh
+
 npaths=$(ls -1d *-automated-ci 2>/dev/null | wc -l)
 path="$PWD"
 scriptwd="$PWD"
@@ -33,9 +36,7 @@ if [ "$npaths" == "1" ]; then
 fi
 
 source send_via_functestbot.sh
-source credentials.sh
 source dotests.sh
-source application.sh
 
 echo $$ > "$LOCK"
 BOOTSTRAP_REQUIRED="$HOME/bootstrap_required"
