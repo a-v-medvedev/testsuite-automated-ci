@@ -44,7 +44,7 @@ if [ -f "$UPDATE_REQUIRED" ]; then
     if [ "$PWD" == $(cat "$UPDATE_REQUIRED") ]; then
         set -x
         cd $scriptwd
-        [ -x ./bootstrap.sh ] && ./bootstrap.sh
+        [ -x ./update.sh ] && ./update.sh
         cfg_git=$(git remote -v | awk '{print $2}' | head -n1 | awk -F/ '{ print $(NF) }')
         cfg_hash=$(git rev-parse --short HEAD)
         rm -f "$UPDATE_REQUIRED"
