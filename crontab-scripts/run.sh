@@ -39,19 +39,19 @@ source send_via_functestbot.sh
 source dotests.sh
 
 echo $$ > "$LOCK"
-BOOTSTRAP_REQUIRED="$HOME/bootstrap_required"
-if [ -f "$BOOTSTRAP_REQUIRED" ]; then
-    if [ "$PWD" == $(cat "$BOOTSTRAP_REQUIRED") ]; then
+UPDATE_REQUIRED="$HOME/update_required"
+if [ -f "$UPDATE_REQUIRED" ]; then
+    if [ "$PWD" == $(cat "$UPDATE_REQUIRED") ]; then
         set -x
         cd $scriptwd
         [ -x ./bootstrap.sh ] && ./bootstrap.sh
         cfg_git=$(git remote -v | awk '{print $2}' | head -n1 | awk -F/ '{ print $(NF) }')
         cfg_hash=$(git rev-parse --short HEAD)
-        rm -f "$BOOTSTRAP_REQUIRED"
+        rm -f "$UPDATE_REQUIRED"
         cd $path
         ci_git=$(git remote -v | awk '{print $2}' | head -n1 | awk -F/ '{ print $(NF) }')
         ci_hash=$(git rev-parse --short HEAD)
-        msg="Test system bootstrapped, ${cfg_git}: *${cfg_hash}*; ${ci_git}: *${ci_hash}*"
+        msg="Test system scripts updated, ${cfg_git}: *${cfg_hash}*; ${ci_git}: *${ci_hash}*"
         send_msg_via_functestbot "$msg" "markdown"
         set +x
     fi

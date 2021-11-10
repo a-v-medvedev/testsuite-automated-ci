@@ -4,10 +4,8 @@
 [ ! -f application.sh ] && echo "application.sh file required" && exit 1
 
 [ -d .git ] && git pull
-[ -d .git ] && git checkout master
 
 cd testsuite-automated-ci
-[ -d .git ] && git pull
-[ -d .git ] && git checkout master
+[ -f .git ] && git pull
 
 rm -f $HOME/lock
