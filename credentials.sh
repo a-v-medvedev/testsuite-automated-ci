@@ -1,1 +1,1 @@
-../credentianls.sh
+../credentials.sh
