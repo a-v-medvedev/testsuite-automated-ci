@@ -7,7 +7,7 @@ source application.sh
 
 BRANCH="$TESTSUITE_DEFAULT_BRANCH"
 
-revision=$(git ls-remote --heads "$PROJECT_URL" 2>/dev/null | grep "refs/heads/$BRANCH" | awk '{print $1}')
+revision=$(git ls-remote --heads "$PROJECT_URL" 2>/dev/null | grep -w "refs/heads/$BRANCH" | awk '{print $1}')
 if [ -z "$revision" ]; then exit 0; fi
 [ -f lasttestedrev ] && oldrevision=$(cat lasttestedrev)
 if [ "$revision" == "$oldrevision" ]; then exit 0; fi
