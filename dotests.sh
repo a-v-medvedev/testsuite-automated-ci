@@ -4,7 +4,7 @@ function build_test_and_report() {
     reason="$1"
 
     [ -e testsuite ] && rm -rf testsuite
-    git clone --recursive "$TESTSUITE_URL" >& /dev/null || exit 1
+    git clone --recursive --depth 1 --branch v1.0 "$TESTSUITE_URL" >& /dev/null || exit 1
 
     cd testsuite || exit 1
     ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" >& fulllog.log
