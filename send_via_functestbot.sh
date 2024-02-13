@@ -15,7 +15,7 @@ function send_files_via_functestbot() {
                     sed -i "s/$DNB_GITLAB_ACCESS_TOKEN/***/g" "$f"
                 fi
             fi
-            curl -F "chat_id=${CHATID}" -F "document=@$PWD/$f" "https://api.telegram.org/bot${BOTID}/sendDocument" >& /dev/null
+            api_send_file "$PWD/$f"
         done
     fi
 }
@@ -23,12 +23,5 @@ function send_files_via_functestbot() {
 function send_msg_via_functestbot() {
     local oldIFS="$IFS"
     local msg="$1"
-    if [ "$2" == "markdown" ]; then
-        markdown="-F parse_mode=Markdown"
-        local oldIFS="$IFS"
-        IFS=
-        msg="$(echo $1 | sed 's/_/\\_/g')"
-        IFS="$oldIFS"
-    fi
-    curl $markdown -F "chat_id=${CHATID}" -F "text=$msg" "https://api.telegram.org/bot${BOTID}/sendMessage" >& /dev/null
+    api_send_message "$msg" "$2"
 }
