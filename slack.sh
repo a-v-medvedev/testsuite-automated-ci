@@ -1,12 +1,15 @@
 #!/bin/bash
 
-
 [ -z "$BOTID" ] && echo "BOTID variable is not defined in credentials.sh" && exit 1
 [ -z "$CHATID" ] && echo "CHATID variable is not defined in credentials.sh" && exit 1
 [ -z "$APITOKEN" ] && echo "APITOKEN variable is not defined in credentials.sh" && exit 1
 
 check_error() {
-    [ "$(echo $1 | jq -r .ok)" == "false" ] && { echo ">> API ERROR: " $(echo "$1" | jq -r ".error"); exit 1; }
+    [ "$(echo $1 | jq -r .ok)" == "false" ] && { echo ">> API ERROR:" $(echo "$1" | jq -r ".error"); exit 1; }
+}
+
+warn_on_error() {
+    [ "$(echo $1 | jq -r .ok)" == "false" ] && { echo "WARNING: API ERROR:" $(echo "$1" | jq -r ".error"); }
 }
 
 find_bot_name() {
@@ -67,6 +70,15 @@ get_messages() {
     echo $x
 }
 
+get_replies() {
+    local action="conversations.replies"
+    local x=$(curl -s \
+                -H "Authorization: Bearer $APITOKEN" \
+                "https://slack.com/api/$action?channel=$CHATID&ts=$1")
+    check_error "$x"
+    echo $x
+}
+
 get_user_info() {
     local user_id="$1"
     local action="users.info"
@@ -86,19 +98,23 @@ delete_message() {
                 -H "Content-type: application/json" \
                 --data "{\"channel\":\"$CHATID\",\"ts\":\"$message_id\"}" \
                 "https://slack.com/api/$action")
-    check_error "$x"
+    warn_on_error "$x"
     echo $x
 }
 
 
 delete_all() {
+    local x
     # Get messages from the channel
-    response=$(get_messages)
-
-    # Parse JSON response and delete bot messages
-    for message in $(echo "$response" | jq -r ".messages[] | select(.user == \"$BOTID\") | .ts"); do
-        delete_message "$message"
-    done
+	response=$(get_messages)
+	for message in $(echo "$response" | jq -r ".messages[] | select(.user == \"$BOTID\") | .ts"); do
+        # Get replies
+        replies=$(get_replies "$message")
+    	for reply in $(echo "$replies" | jq -r '.messages[] | .ts'); do
+			x=$(delete_message "$reply")
+		done
+		x=$(delete_message "$message")
+	done
 }
 
 
@@ -220,7 +236,7 @@ function api_send_message() {
 function api_send_final_message() {
     local usertag=""
     [ -z $MSG_USERID ] || usertag="<@$MSG_USERID>"
-    api_send_message "$1 $usertag"  ##"All actions are finished $usertag"
+    api_send_message "$1 $usertag"
     [ -f "$HOME/.thread" ] && rm -f "$HOME/.thread"
 }
 
