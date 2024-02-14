@@ -4,11 +4,15 @@ function build_test_and_report() {
     reason="$1"
 
     [ -e testsuite ] && rm -rf testsuite
-    git clone --recursive "$TESTSUITE_URL" >& /dev/null || exit 1
+    git clone --recursive "$TESTSUITE_URL" >& /dev/null || { echo "FATAL: error cloning testsuite repository"; exit 1; }
 
-    cd testsuite || exit 1
+    cd testsuite || { echo "FATAL: not testsuite directory"; exit 1 }
     [ -f $HOME/.thread ] && rm -f $HOME/.thread
     ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" >& fulllog.log
+
+    cd thirdparty
+    ./dnb.sh :d &>> fulllog.log || { echo "FATAL: downloading stage failed (./dnb.sh :d)"; exit 1 }
+    cd ..
 
     ./get_timestamp.sh &>> fulllog.log 
     timestamp=$(grep 'TIMESTAMP: ' fulllog.log | awk '{ print $2 }' | head -n1)
