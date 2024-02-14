@@ -21,7 +21,11 @@ function send_files_via_functestbot() {
 }
 
 function send_msg_via_functestbot() {
-    local oldIFS="$IFS"
     local msg="$1"
     api_send_message "$msg" "$2"
+}
+
+function send_final_msg_via_functestbot() {
+    local timestamp="$1"
+    api_send_final_message "All actions for *$timestamp* are finished" "markdown"
 }

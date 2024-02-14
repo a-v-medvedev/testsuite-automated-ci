@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#set -x
-#APITOKEN="xoxb-371250606322-6625563564419-AlD98LWRUNH124zX1GLQI34Y"
-#CHATID="C06HZ452EVD"
-#BOTID="U06JDGKGLCB"
 
 [ -z "$BOTID" ] && echo "BOTID variable is not defined in credentials.sh" && exit 1
 [ -z "$CHATID" ] && echo "CHATID variable is not defined in credentials.sh" && exit 1
@@ -27,12 +23,15 @@ send_message() {
     local text="$1"
     local markdown="$2"
     local action="chat.postMessage"
+    local thread=""
+    [ -f ".thread" ] && thread=",\"thread_ts\":\"$(cat .thread)\""
     local x=$(curl -s -X POST \
                 -H "Authorization: Bearer $APITOKEN" \
                 -H "Content-Type: application/json" \
-                -d "{\"channel\":\"$CHATID\",\"text\":\"$text\"$markdown}" \
+                -d "{\"channel\":\"$CHATID\",\"text\":\"$text\"$markdown$thread}" \
                 "https://slack.com/api/$action")
     check_error "$x"
+    [ -f ".thread" ] || echo $x | jq -r ".ts" > .thread
     echo $x
 }
 
@@ -200,10 +199,18 @@ function api_send_file() {
 function api_send_message() {
     local usertag=""
     [ -z $MSG_USERID ] || usertag="<@$MSG_USERID>"
+    [ -f ".thread" ] && usertag=""
     local markdown=""
     [ "$2" == "markdown" ] && markdown=",\"mrkdwn\":true"
     local response=$(send_message "$1 $usertag" "$markdown")
     return 0
+}
+
+function api_send_final_message() {
+    local usertag=""
+    [ -z $MSG_USERID ] || usertag="<@$MSG_USERID>"
+    api_send_message "$1 $usertag"  ##"All actions are finished $usertag"
+    [ -f ".thread" ] && rm -f ".thread"
 }
 
 #find_bot_name

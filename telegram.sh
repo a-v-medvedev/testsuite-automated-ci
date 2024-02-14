@@ -6,6 +6,7 @@
 
 function filter() {
     ./JSON.sh | egrep "\[$1\]" | awk -v FS="\t" '{print $2}'
+    return 0
 }
 
 function api_get_message() {
@@ -38,6 +39,7 @@ function api_get_message() {
     MSG_TEXT=$(echo "$text" | awk '{for (i=2;i<NF;i++) printf $i " "; printf "\n"}')
     MSG_COMMAND=$(echo $text | awk '{print substr($1,2)}')
     MSG_DATE="$(date "+%F %R" --date=@$date)"
+    return 0
 }
 
 function api_send_message() {
@@ -51,9 +53,15 @@ function api_send_message() {
     local markdown=""
     [ "$2" == "markdown" ] && markdown="-F parse_mode=Markdown"
     curl -s $markdown -F "chat_id=${CHATID}" -F "text=$msg" "https://api.telegram.org/bot${BOTID}/sendMessage" > /dev/null 
+    return 0
 }
 
 function api_send_file() {
     curl -s -F "chat_id=${CHATID}" -F "document=@$1" "https://api.telegram.org/bot${BOTID}/sendDocument" > /dev/null 
+    return 0
+}
+
+function api_send_final_message() {
+    return 0
 }
 
