@@ -7,18 +7,19 @@ function build_test_and_report() {
     git clone --recursive "$TESTSUITE_URL" >& /dev/null || exit 1
 
     cd testsuite || exit 1
-    [ -f .thread ] && rm -f .thread
+    [ -f $HOME/.thread ] && rm -f $HOME/.thread
     ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" >& fulllog.log
 
-    ./get_timestamp.sh >>& fulllog.log 
+    ./get_timestamp.sh &>> fulllog.log 
     timestamp=$(grep 'TIMESTAMP: ' fulllog.log | awk '{ print $2 }' | head -n1)
     [ -z "$timestamp" ] || export TESTSUITE_TIMESTAMP="$timestamp"
     local machine=""
     [ -z "$TESTSUITE_HWCONF" ] || machine="\n- Machine: $TESTSUITE_HWCONF"
-    local msg="Functest started with timestamp *$timestamp* for application: *$TESTSUITE_PROJECT*.\n\
-                - Branch: *$BRANCH*\n\
-                - Changeset: *$revision*\n\
-                - Reason is: $reason$machine"
+    local msg=\
+"Functest started with timestamp *$timestamp* for application: *$TESTSUITE_PROJECT*.\n\
+- Branch: *$BRANCH*\n\
+- Changeset: *$revision*\n\
+- Reason is: $reason$machine"
     send_msg_via_functestbot "$msg"
 
     ./testall.sh "$TESTSUITE_SUITES" &>> fulllog.log

@@ -24,24 +24,35 @@ send_message() {
     local markdown="$2"
     local action="chat.postMessage"
     local thread=""
-    [ -f ".thread" ] && thread=",\"thread_ts\":\"$(cat .thread)\""
+    [ -f "$HOME/.thread" ] && thread=",\"thread_ts\":\"$(cat $HOME/.thread)\""
     local x=$(curl -s -X POST \
                 -H "Authorization: Bearer $APITOKEN" \
                 -H "Content-Type: application/json" \
                 -d "{\"channel\":\"$CHATID\",\"text\":\"$text\"$markdown$thread}" \
                 "https://slack.com/api/$action")
     check_error "$x"
-    [ -f ".thread" ] || echo $x | jq -r ".ts" > .thread
+    [ -f "$HOME/.thread" ] || echo $x | jq -r ".ts" > $HOME/.thread
     echo $x
 }
 
 send_file() {
     local file=$1
     local action="files.upload"
-    local x=$(curl -s -F file=@$file \
+    local thread=""
+    [ -f "$HOME/.thread" ] && thread="{\"thread_ts\":\"$(cat $HOME/.thread)\"}"
+    local x
+    if [ -z "$thread" ]; then
+        x=$(curl -s -F file=@$file \
                       -F channels=$CHATID \
                       -F token=$APITOKEN \
                       "https://slack.com/api/$action")
+    else
+        x=$(curl -s -F file=@$file \
+                      -F channels=$CHATID \
+                      -F token=$APITOKEN \
+                      -F "thread_ts=$thread" \
+                      "https://slack.com/api/$action")
+    fi
     check_error "$x"
     echo $x
 }
@@ -199,7 +210,7 @@ function api_send_file() {
 function api_send_message() {
     local usertag=""
     [ -z $MSG_USERID ] || usertag="<@$MSG_USERID>"
-    [ -f ".thread" ] && usertag=""
+    [ -f "$HOME/.thread" ] && usertag=""
     local markdown=""
     [ "$2" == "markdown" ] && markdown=",\"mrkdwn\":true"
     local response=$(send_message "$1 $usertag" "$markdown")
@@ -210,7 +221,7 @@ function api_send_final_message() {
     local usertag=""
     [ -z $MSG_USERID ] || usertag="<@$MSG_USERID>"
     api_send_message "$1 $usertag"  ##"All actions are finished $usertag"
-    [ -f ".thread" ] && rm -f ".thread"
+    [ -f "$HOME/.thread" ] && rm -f "$HOME/.thread"
 }
 
 #find_bot_name
