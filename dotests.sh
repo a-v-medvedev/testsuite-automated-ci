@@ -11,7 +11,7 @@ function build_test_and_report() {
     ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" >& fulllog.log
 
     cd thirdparty || { echo "FATAL: no thirdparty/ in testsuite directory"; exit 1; }
-    ./dnb.sh :d >>& ../fulllog.log  || { echo "FATAL: downloading stage failed (./dnb.sh :d)"; exit 1; }
+    ./dnb.sh :d &>> ../fulllog.log  || { echo "FATAL: downloading stage failed (./dnb.sh :d)"; exit 1; }
     cd ..
 
     ./get_timestamp.sh &>> fulllog.log 
