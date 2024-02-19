@@ -1,13 +1,13 @@
 # Type of API: SLACK or TELEGRAM
 #API="SLACK"
 
-# Telegram bot name (including the '@' at the beginning)
+# Telegram/Slack bot name (for Telegram: including the '@' at the beginning)
 #BOTNAME="@functestbot"
 
-# Telegram bot id
+# Telegram/Slack bot id
 #BOTID="..."
 
-# Telegram chat id
+# Telegram/Slack chat id
 #CHATID="..."
 
 # API token (if required, i.e. for Slack)

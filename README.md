@@ -19,10 +19,11 @@ git commit -am "Submodule added for testsuite-automated-ci."
 ```
 - Add symlinks and commit them:
 ```
-ln -s testsuite-automated-ci/crontab-scripts/run.sh run.sh
-ln -s testsuite-automated-ci/crontab-scripts/update.sh update.sh
+ln -s testsuite-automated-ci/crontab-scripts/*.sh .
 git commit -am "Symlinks for main scripts added."
 ```
+> NOTE: You don't have to put the `credentials.sh` file in the repository. You also can hold it by direct hand-copying it to the target machine for security reasons. Don't even try to put Slack API tokens to a public repositories: such actions are constantly tracked by Slack and result is consequences. Holding such info in closed private repository is up to you.
+
 
 2. Clone this project on a target machine:
 Push all changes and go to target machine into a selected directory. Don't forget to be logged in with an account which is going to be used for cron-based automated work in production.
@@ -36,7 +37,7 @@ bash# cd <DIRECTORY-OF-CLONED-PROJECT>
 bash# ./update.sh
 Already up-to-date.
 Already up-to-date.
-bash# ./run.sh test_by_request.sh
+bash# ./run.sh ./test_by_request.sh
 bash#
 ```
 
@@ -44,8 +45,8 @@ bash#
 ```
 SHELL=/bin/bash
 MAILTO=<username>
-* * * * *    $WORKING_DIR/run.sh test_on_new_commits.sh
-* * * * *    $WORKING_DIR/run.sh test_by_request.sh
+* * * * *    $WORKING_DIR/run.sh ./test_on_new_commits.sh
+* * * * *    $WORKING_DIR/run.sh ./test_by_request.sh
 ```
 
 5. Check if `testsuite` starts on new commits to the target project branch (which is set up in `application.sh`).
@@ -55,6 +56,12 @@ MAILTO=<username>
 
 
 ## Credentials
+
+### Tokens for your main repositories
+
+The `DNB_GITLAB_ACCESS_TOKEN` and `DNB_GITLAB_USERNAME` variables may appear useful ones to set if your target project is one residing on the password-protected part of `gitlab.com` hub. If you have some other password-protected facilities in your target project download-and-build routines, it is good idea to put codes in environment values just in this file. 
+
+### Telegram integration case:
 
 You have to get Telegram chat id and save it in `credentials.sh` file. You basically create a telegram chat (you need at least two people to create a chat in Telegram, but this is required only on a chat creation stage, then only one person may stay in a chat; the second one can leave it).
 
@@ -68,33 +75,35 @@ curl -s https://api.telegram.org/bot${BOTID}/getUpdates
 The output of the script will contain `chat_id` field which you need to save.
 
 So, from Telegram side, three values are required:
-- `BOTNAME="@XXXXXXX:`
+- `BOTNAME="@XXXXXXX`
 - `BOTID="NNNNNNNN:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"`
 - `CHATID="-NNNNNNNNNNNNNNNN"`
 
-The `DNB_GITLAB_ACCESS_TOKEN` and `DNB_GITLAB_USERNAME` variables may appear useful ones to set if your target project is one residing on the password-protected part of `gitlab.com` hub. If you have some other password-protected facilities in your target project download-and-build routines, it is good idea to put codes in environment values just in this file. 
+### Slack integration case:
 
-You don't have to put the `credentials.sh` file in the repository. You also can hold it by direct hand-copying it to the target machine for security reasons.
+...
 
 
 ## Bot commands
 
 Currenty Telegram bot interaction script is able to handle two commands:
 
-### `/update`
+### `update`
+
+Spelled: `/update @functestbot` for Telegram; `!update` for Slack.
 
 Used to automatically start the `update.sh` script in the working directory to download the latest version of all scripts without a necessity of command-line actions on the target machine.
 
-### `/test`
+### `test`
+
+Spelled: `/test ... @functestbot` for Telegram; `!test ...` for Slack.
 
 Used to manually initiate test procedure for a selected target project branch.
 
-`/test` : with no args just starts a test procedure for a HEAD of default branch.
+`test` : with no args just starts a test procedure for a HEAD of default branch.
 
-`/test BRANCH` : starts the procedure for HEAD of a specific branch.
+`test BRANCH` : starts the procedure for HEAD of a specific branch.
 
-`/test BRANCH SUITE1 SUITE2 SUITE3` : starts only selected suites for a specific branch.
-
-
+`test BRANCH SUITE1 SUITE2 SUITE3` : starts only selected suites for a specific branch.
 
 
