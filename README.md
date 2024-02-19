@@ -3,13 +3,14 @@
 ## About
 This projects includes a number of CI automation scripts for `testsuite` project (https://github.com/a-v-medvedev/testsuite).
 
-It incorporates some scripts for crontab and some scripts that take commands from Telegram Instant Messaging chats.
+It incorporates some scripts for crontab and some scripts that take commands from Telegram Instant Messaging chats or Slack messaging channels.
 
 ## Setting up
 
 To make it all work, do the actions as listed below.
 
 1. Create a new git project which includes:
+
 - `application.sh` file. Use a provided here `_application.sh` file as a template.
 - `credentials.sh` file. Use a provided here `_credentials.sh` file as a template. See Credetial section below for reference.
 - Add this git project as a submodule to your project:
@@ -26,12 +27,14 @@ git commit -am "Symlinks for main scripts added."
 
 
 2. Clone this project on a target machine:
+
 Push all changes and go to target machine into a selected directory. Don't forget to be logged in with an account which is going to be used for cron-based automated work in production.
 ```
 git clone --recursive <URL-TO-GIT-PORJECT>
 ```
 
 3. Check that it basically works:
+
 ```
 bash# cd <DIRECTORY-OF-CLONED-PROJECT>
 bash# ./update.sh
@@ -42,6 +45,7 @@ bash#
 ```
 
 4. Add `crontab` records for periodical check of events:
+
 ```
 SHELL=/bin/bash
 MAILTO=<username>
@@ -49,9 +53,13 @@ MAILTO=<username>
 * * * * *    $WORKING_DIR/run.sh ./test_by_request.sh
 ```
 
-5. Check if `testsuite` starts on new commits to the target project branch (which is set up in `application.sh`).
+5. Check if `testsuite` starts on new commits 
 
-6. Check if `testsuite` starts by request from a Telegram chat.
+Check if scripting starts after some new commits to the target project branch (which is set up in `application.sh`).
+
+6. Check if `testsuite` starts by request 
+
+If you explicitely request test from a Telegram or Slack chat, check that scripting really starts and reports results.
 
 
 
@@ -86,7 +94,7 @@ So, from Telegram side, three values are required:
 
 ## Bot commands
 
-Currenty Telegram bot interaction script is able to handle two commands:
+Currenty chat bot interaction script is able to handle two commands:
 
 ### `update`
 
@@ -100,7 +108,7 @@ Spelled: `/test ... @functestbot` for Telegram; `!test ...` for Slack.
 
 Used to manually initiate test procedure for a selected target project branch.
 
-`test` : with no args just starts a test procedure for a HEAD of default branch.
+`test` : with no args just starts a test procedure for a HEAD of default branch (branch name is set in `application.sh`).
 
 `test BRANCH` : starts the procedure for HEAD of a specific branch.
 
