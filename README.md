@@ -87,10 +87,62 @@ So, from Telegram side, three values are required:
 - `BOTID="NNNNNNNN:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"`
 - `CHATID="-NNNNNNNNNNNNNNNN"`
 
+Save these values in your `credentials.sh`.
+
 ### Slack integration case:
 
-...
+You have to create a Slack "application", introduce a bot functionality in it,
+add this application to your Slack channel. Here are some instructions:
 
+#### Making an Application, a Chat Bot and getting the API token
+
+Here is a step-by-step guide to obtaining a Slack API token:
+
+- Create a Slack App:
+    - Go to the Slack API website: https://api.slack.com/apps
+    - Click on "Create New App".
+    - Fill out the necessary information for your app, such as the name and the Slack workspace where you want to install the app.
+- Add Bot User:
+    - Once your app is created, navigate to the "Bot Users" section under the "Features" tab in the sidebar.
+    - Click on "Add a Bot User" and confirm the addition.
+- Permissions for a Bot:
+    - In the sidebar, go to "OAuth & Permissions".
+    - Under "Scopes", add the necessary permissions for your app. For this simple bot, you'll need at least `channels:history`, `channels:join`, `channels:read`, `files:write`, `users.profile:read`, `users:read`, `chat:write`.
+    - Save the changes.
+- Install App to Workspace:
+    - After adding permissions, scroll up to the top of the "OAuth & Permissions" page.
+    - Click on the "Install App to Workspace" button.
+    - Authorize the app to access your workspace.
+- Retrieve Token:
+    - Once the app is installed in your workspace, you'll be redirected to a page containing your OAuth Access Token.
+    - Copy the OAuth Access Token. This token will be used as your APITOKEN value (to put into the `credentials.sh` file).
+
+#### Find the Chat ID
+
+To find the channel ID for some channel in Slack, you can follow these steps:
+
+- Open Slack in a Web Browser
+- Navigate to the Channel: find the channel in the sidebar or by using the search feature.
+- View Channel Details: once you're in the channel, click on the channel name at the top to open the channel details.
+- Get Channel ID: in the channel details, look for the "More" option (three vertical dots). Click on "More" and then select "Additional options". From the dropdown menu, choose "Copy link". The copied link will contain the channel ID at the end of the URL. It will look something like this: `https://yourworkspace.slack.com/archives/C1234567890`. The part after `/archives/` is the channel ID (`C1234567890` in this example). The channel id is supposed to be saved in the CHATID variable in the `credentials.sh` file.
+
+#### Find the Bot User ID
+
+To obtain the bot user ID or name, you typically need to retrieve this information from the Slack API. If you're using a bot token, you can call the auth.test method to get information about the bot user associated with the token. Here's how you can do it using curl: 
+```
+$ curl -X POST -H "Authorization: Bearer $APITOKEN" https://slack.com/api/auth.test
+{"ok":true,"url":"https:\/\/xxxxxx.slack.com\/","team":"XXX","user":"somebotname","team_id":"A5B4C3D2G","user_id":"UXXABCDEFGH","bot_id":"BXXPQRSTUVWZ","is_enterprise_install":false}
+```
+
+This will return JSON data containing information about your bot user, including its user ID and name. In this example, the required id is `UXXABCDEFGH`. This value is supposed to be saved in the BOTID variable in the `credentials.sh` file.
+
+#### Save the IDs
+
+You have to save the information obtained during the steps made before. Put the APITOKEN value in the `creadentials.sh`. The same for values of `CHATID` and `BOTID` variables.
+
+#### Add your bot to a Slack channel
+
+You have to add the application that you created to the Slack channel that you are going to use. For this purpose, you open the channel in the interface, click on the name of channel on the top, in the area "Integration" you'll find the part named "Apps". Just add your application here. *NOTE:* adding the application to worspace doesn't work, you have to add your application to your channel!
 
 ## Bot commands
 
@@ -108,10 +160,8 @@ Spelled: `/test ... @functestbot` for Telegram; `!test ...` for Slack.
 
 Used to manually initiate test procedure for a selected target project branch.
 
-`test` : with no args just starts a test procedure for a HEAD of default branch (branch name is set in `application.sh`).
-
-`test BRANCH` : starts the procedure for HEAD of a specific branch.
-
-`test BRANCH SUITE1 SUITE2 SUITE3` : starts only selected suites for a specific branch.
+- `test` : with no args just starts a test procedure for a HEAD of default branch (branch name is set in `application.sh`).
+- `test BRANCH` : starts the procedure for HEAD of a specific branch.
+- `test BRANCH SUITE1 SUITE2 SUITE3` : starts only selected suites for a specific branch.
 
 
