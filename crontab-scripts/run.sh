@@ -22,17 +22,6 @@ if [ ! -z "$pid" ]; then
     [ ! -z "$pid" ] && rm -f "$LOCK"
 fi
 
-source credentials.sh
-if [ "$API" == "SLACK" ]; then
-    source slack.sh
-elif [ "$API" == "TELEGRAM" ]; then
-    source telegram.sh
-else
-    echo "FATAL: API is not selected in credentials.sh"
-    exit 1
-fi
-source application.sh
-
 npaths=$(ls -1d *-automated-ci 2>/dev/null | wc -l)
 path="$PWD"
 scriptwd="$PWD"
@@ -43,6 +32,16 @@ if [ "$npaths" == "1" ]; then
     fi
 fi
 
+source credentials.sh
+if [ "$API" == "SLACK" ]; then
+    source slack.sh
+elif [ "$API" == "TELEGRAM" ]; then
+    source telegram.sh
+else
+    echo "FATAL: API is not selected in credentials.sh"
+    exit 1
+fi
+source application.sh
 source send_via_functestbot.sh
 source dotests.sh
 
@@ -50,7 +49,6 @@ echo $$ > "$LOCK"
 UPDATE_REQUIRED="$HOME/update_required"
 if [ -f "$UPDATE_REQUIRED" ]; then
     if [ "$PWD" == $(cat "$UPDATE_REQUIRED") ]; then
-        set -x
         cd $scriptwd
         [ -x ./update.sh ] && ./update.sh
         if [ -d .git ]; then
@@ -64,7 +62,7 @@ if [ -f "$UPDATE_REQUIRED" ]; then
         [ -z "$cfg_git" ] && msg="Test system scripts updated, ${ci_git}: *${ci_hash}*"
         [ ! -z "$cfg_git" ] && msg="Test system scripts updated, ${cfg_git}: *${cfg_hash}*; ${ci_git}: *${ci_hash}*"
         send_msg_via_functestbot "$msg" "markdown"
-        set +x
+        echo "UPDATE FINISHED cfg=${cfg_hash}; ci=${ci_hash}"
     fi
 fi
 
