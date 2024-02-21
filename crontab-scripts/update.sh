@@ -6,6 +6,6 @@
 [ -d .git ] && git pull
 
 cd testsuite-automated-ci
-[ -d .git ] && git pull
+[ -f .git ] && git pull
 
 rm -f $HOME/lock
