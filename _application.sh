@@ -10,13 +10,15 @@ exit 1
 #CONF_URL="https://...git"      # Example: "https://github.com/a-v-medvedev/testsuite_confs.git"
 #TESTSUITE_URL="https://github.com/a-v-medvedev/testsuite.git"
 
-#export TESTSUITE_HWCONF="..."
-
+#export TESTSUITE_AVAILABLE_HWCONFS="machine1 machine2"
+#export TESTSUITE_HWCONF="..."   # default hwconf. Empty if there is default 
+                                 # value: nothing starts without explicit mentioning of a machine
 #export TESTSUITE_PROJECT="..."  # Example: "teststub"
 #export TESTSUITE_DEFAULT_BRANCH="master"
 #export TESTSUITE_BUILD_CONF="generic"
-#export TESTSUITE_MODULE="functest"
-#export TESTSUITE_SCRIPT="functional"
+#export TESTSUITE_MODULE="functest"     # the only meaningful value
+#export TESTSUITE_SCRIPT="functional"   # the only meaningful value
 #export TESTSUITE_CONF_URL=${CONF_URL}
-#export TESTSUITE_SUITES="basic"
+#export TESTSUITE_SUITES="build_variations basic"
+#export TESTSUITE_REQUIRED_SUITES="build_variations"  # those suites will be automatically added if not mentioned
 

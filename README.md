@@ -160,8 +160,10 @@ Spelled: `/test ... @functestbot` for Telegram; `!test ...` for Slack.
 
 Used to manually initiate test procedure for a selected target project branch.
 
-- `test` : with no args just starts a test procedure for a HEAD of default branch (branch name is set in `application.sh`).
-- `test BRANCH` : starts the procedure for HEAD of a specific branch.
-- `test BRANCH SUITE1 SUITE2 SUITE3` : starts only selected suites for a specific branch.
+- `test` -- with no args just starts a test procedure for a HEAD of default branch (branch name is set in `application.sh`; default set of test suites is set there as well).
+- `test branch:<BRANCH>` -- starts the procedure for HEAD of a specific branch.
+- `test branch:<BRANCH> suite:<SUITE1> suite:<SUITE2> suite:<SUITE3>` -- starts only selected suites for a specific branch. If some required suites are defined in `application.sh`, they will be added to this list automatically (in reversed order of the `TESTSUITE_REQUIRED_SUITES` value).
+- `test suite:<SUITE> machine:<MACHINE>` -- will be handled on a certain machine (that means, if the `MACHINE` is defined as `TESTSUITE_HWCONF` values or is listed in the `TESTSUITE_AVAILABLE_HWCONFS`. If `TESTSUITE_HWCONF` is empty, only explicitly mentioned `machine:MACHINE` parameter results in actions.
+- `test revision:<REVISION>` -- do test for a specific revision denoted by the commit hash (7 letters or more), but not for a head of some branch.
 
 
