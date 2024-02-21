@@ -34,13 +34,17 @@ function parse_test_cmdline() {
 
 	[ -z "$TESTSUITE_HWCONF" -a -z "$MACHINE" ] && exit 0
 
-	if [ ! -z "$TESTSUITE_AVAILABLE_HWCONFS" ]; then
-		for i in $TESTSUITE_AVAILABLE_HWCONFS; do
-			if [ "$MACHINE" == "$i" ]; then
-				requested_hwconf="$i"
-			fi
-		done
-	fi
+    [ -z "$TESTSUITE_HWCONF" -a -z "$TESTSUITE_AVAILABLE_HWCONFS" ] && fatal "Conf error: HWCONF is not set"
+
+    [ -z "$TESTSUITE_AVAILABLE_HWCONFS" ] && TESTSUITE_AVAILABLE_HWCONFS="$TESTSUITE_HWCONF"
+
+    for i in $TESTSUITE_AVAILABLE_HWCONFS; do
+        if [ "$MACHINE" == "$i" ]; then
+            requested_hwconf="$i"
+        fi
+    done
+
+    [ -z "$requested_hwconf" -a ! -z "$MACHINE" ] && exit 0
 
 	[ -z "$requested_hwconf" ] || TESTSUITE_HWCONF="$requested_hwconf" && true
 
