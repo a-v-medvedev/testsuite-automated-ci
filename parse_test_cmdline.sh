@@ -20,6 +20,8 @@ function parse_test_cmdline() {
 		esac
 	done
 
+	[ -z "$suites" ] && suites="$TESTSUITE_SUITES"
+    [ -z "$suites" ] && fatal "No default set of suites is set up."
 	if [ ! -z "$TESTSUITE_REQUIRED_SUITES" ]; then
 		for i in $TESTSUITE_REQUIRED_SUITES; do
 			echo "$suites" | grep -wq "$i" || suites="$i $suites" && true
