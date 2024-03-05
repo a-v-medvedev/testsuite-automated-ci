@@ -11,9 +11,6 @@ function build_test_and_report() {
     #--- ENTER the testsuite directory
     cd testsuite || { echo "FATAL: no testsuite directory"; exit 1; }
 
-    # FIXME .thread is a technical file for Slack interaction. Think about getting rid of it
-    [ -f $HOME/.thread ] && rm -f $HOME/.thread
-
     # Bootstraping the testsuite
     ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" >& fulllog.log
 

@@ -10,16 +10,22 @@ function fatal() {
 function parse_test_cmdline() {
     local REVISION="HEAD"
 	for i in $MSG_TEXT; do
-		value=$(echo $i | cut -d: -f2)
+		value=$(echo $i | cut -d: -f2-)
 		case $i in
 			branch:*) BRANCH=$value; ;;
 			suite:*) suites="$suites $value"; ;;
 			machine:*) MACHINE=$value; ;;
 			revision:*) REVISION=$value; ;;
+                        #env:*) ENV="$ENV $value"
 			*) fatal "*SYNTAX ERROR* in arg: $i";;
 		esac
 	done
 
+#   if [ ! -z "$ENV" ]; then
+#       for exp in $ENV; do
+#           eval export $exp
+#       done
+#   fi
 	[ -z "$suites" ] && suites="$TESTSUITE_SUITES"
     [ -z "$suites" ] && fatal "No default set of suites is set up."
 	if [ ! -z "$TESTSUITE_REQUIRED_SUITES" ]; then

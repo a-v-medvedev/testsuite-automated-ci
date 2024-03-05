@@ -16,6 +16,9 @@ revision=$(echo $revision | awk '{ printf "%.7s\n", $1 }')
 
 echo "NEW REVISION: $revision, branch: $BRANCH"
 
+# FIXME .thread is a technical file for Slack interaction. Think about getting rid of it
+[ -f $HOME/.thread ] && rm -f $HOME/.thread
+
 export TESTSUITE_BRANCH=${BRANCH}
 build_test_and_report "new commit in this branch appeared"
 
