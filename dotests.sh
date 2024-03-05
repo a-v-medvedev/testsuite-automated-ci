@@ -21,7 +21,7 @@ function build_test_and_report() {
     ./download.sh &>> ../fulllog.log  || { echo "FATAL: downloading stage failed (./download.sh)"; exit 1; }
 
     # Assign an unique timestamp to this testing session
-    ./get_timestamp.sh &>> fulllog.log 
+    echo "TIMESTAMP: $(./get_timestamp.sh)" &>> fulllog.log 
     timestamp=$(grep 'TIMESTAMP: ' fulllog.log | awk '{ print $2 }' | head -n1)
     [ -z "$timestamp" ] || export TESTSUITE_TIMESTAMP="$timestamp"
 
