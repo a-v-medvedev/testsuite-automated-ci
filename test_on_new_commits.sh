@@ -1,7 +1,17 @@
 #/bin/bash
 
-source send_via_functestbot.sh
 source credentials.sh
+
+if [ "$API" == "SLACK" ]; then
+    source slack.sh
+elif [ "$API" == "TELEGRAM" ]; then
+    source telegram.sh
+else
+    echo "FATAL: API is not selected in credentials.sh"
+    exit 1
+fi
+
+source send_via_functestbot.sh
 source dotests.sh
 source application.sh
 
