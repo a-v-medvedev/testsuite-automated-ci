@@ -67,5 +67,5 @@ if [ -f "$UPDATE_REQUIRED" ]; then
 fi
 
 # Args is: test_by_request.sh or test_on_new_commits.sh -- set one of them in crontab
-./$1
+$1
 rm -f "$LOCK"
