@@ -1,6 +1,7 @@
 # testsuite-automated-ci
 
 ## About
+
 This projects includes a number of CI automation scripts for `testsuite` project (https://github.com/a-v-medvedev/testsuite).
 
 It incorporates some scripts for crontab and some scripts that take commands from Telegram Instant Messaging chats or Slack messaging channels.
@@ -12,7 +13,7 @@ To make it all work, do the actions as listed below.
 1. Create a new git project which includes:
 
 - `application.sh` file. Use a provided here `_application.sh` file as a template.
-- `credentials.sh` file. Use a provided here `_credentials.sh` file as a template. See Credetial section below for reference.
+- `credentials.sh` file. Use a provided here `_credentials.sh` file as a template. See Credential section below for reference.
 - Add this git project as a submodule to your project:
 ```
 git submodule add https://github.com/a-v-medvedev/testsuite-automated-ci.git testsuite-automated-ci
