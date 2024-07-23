@@ -16,7 +16,7 @@ function parse_test_cmdline() {
             suite:*) suites="$suites $value"; ;;
             machine:*) MACHINE=$value; ;;
             revision:*) REVISION=$value; ;;
-            env:*) ENV="$ENV $value"
+            env:*) ENV="$ENV $value";;
             *) fatal "*SYNTAX ERROR* in arg: $i";;
         esac
     done
