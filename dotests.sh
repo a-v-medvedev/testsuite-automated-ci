@@ -1,26 +1,35 @@
 #!/bin/bash
 
+function fatal_error() {
+    local msg="$1"
+    local file="$2"
+    echo "FATAL: $1"
+    send_msg_via_functestbot "Functest bootstrap phase failed: $1" "$file"
+    exit 1
+}
+
 function build_test_and_report() {
     reason="$1"
 
     # Clone the testsuite project
     [ -e testsuite ] && rm -rf testsuite
-    git clone --recursive "$TESTSUITE_URL" >& /dev/null || { echo "FATAL: error cloning testsuite repository"; exit 1; }
+    git clone --recursive "$TESTSUITE_URL" >& fulllog.log || fatal_error "error cloning testsuite repository" $PWD/fulllog.txt
 
     #-------------------------------------------------------------------
     #--- ENTER the testsuite directory
-    cd testsuite || { echo "FATAL: no testsuite directory"; exit 1; }
+    cd testsuite || fatal_error "no testsuite directory for some reason" $PWD/fulllog.txt
 
     # Bootstraping the testsuite
-    ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" >& fulllog.log
+    ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" &>> ../fulllog.log || fatal_error "./bootstrap.sh execution failed" $PWD/../fulllog.log
 
     # Making all downloads beforehand
-    ./download.sh &>> ../fulllog.log  || { echo "FATAL: downloading stage failed (./download.sh)"; exit 1; }
+    ./download.sh &>> ../fulllog.log || fatal_error "downloading stage failed (./download.sh)" $PWD/../fulllog.log
 
     # Assign an unique timestamp to this testing session
-    echo "TIMESTAMP: $(./get_timestamp.sh)" &>> fulllog.log 
-    timestamp=$(grep 'TIMESTAMP: ' fulllog.log | awk '{ print $2 }' | head -n1)
+    echo "TIMESTAMP: $(./get_timestamp.sh)" &>> ../fulllog.log 
+    timestamp=$(grep 'TIMESTAMP: ' ../fulllog.log | awk '{ print $2 }' | head -n1)
     [ -z "$timestamp" ] || export TESTSUITE_TIMESTAMP="$timestamp"
+    [ -z "$timestamp" ] && fatal_error "error getting the unique timestamp" $PWD/../fulllog.log
 
     # Make a first message denoting the actual start of building and testing process
     local machine=""
@@ -34,20 +43,20 @@ function build_test_and_report() {
 
 
     # Do all build and test actions
-    ./testall.sh "$TESTSUITE_SUITES" &>> fulllog.log
-    timestamp=$(grep 'TIMESTAMP: ' fulllog.log | awk '{ print $2 }' | head -n1)
-    [ -z "$timestamp" ] && return 1
-    tst_revision=$(grep 'REVISION: ' fulllog.log | awk '{ printf "%.7s\n", $2 }' | head -n1)
-    [ -z "$tst_revision" ] || revision=$tst_revision
-    [ -z "$timestamp" ] || mv fulllog.log summary_$timestamp.log
+    ./testall.sh "$TESTSUITE_SUITES" &>> ../fulllog.log
 
     #--- LEAVE the testsuite directory
     cd ..
     #-------------------------------------------------------------------
 
+    tst_revision=$(grep 'REVISION: ' fulllog.log | awk '{ printf "%.7s\n", $2 }' | head -n1)
+    [ -z "$tst_revision" ] || revision=$tst_revision
+
+    mv fulllog.log summary_$timestamp.log
+
     # Send final stats message
     for suite in $TESTSUITE_SUITES; do
-        local msg=$(grep "^--- $suite: " testsuite/summary_$timestamp.log | sed 's/^--- /- /g')
+        local msg=$(grep "^--- $suite: " summary_$timestamp.log | sed 's/^--- /- /g')
         if ! echo "$msg" | grep -q 'F=0 N=0 TACE=0'; then
             msg=$(echo "$msg" | sed 's/ F=/ *F=/;s/TACE=[0-9]*/&*/')
         fi
