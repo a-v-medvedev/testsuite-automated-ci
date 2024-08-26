@@ -9,7 +9,7 @@ exit 1
 #PROJECT_URL="https://...git"   # Example: "https://github.com/a-v-medvedev/teststub.git"
 #CONF_URL="https://...git"      # Example: "https://github.com/a-v-medvedev/testsuite_confs.git"
 #TESTSUITE_TESTSUITE_URL="https://github.com/a-v-medvedev/testsuite.git"
-#TESTSUITE_BRANCH_URL="master"
+#TESTSUITE_TESTSUITE_BRANCH="master"
 
 #export TESTSUITE_AVAILABLE_HWCONFS="machine1 machine2"
 #export TESTSUITE_HWCONF="..."   # default hwconf. Empty if there is default 
@@ -18,8 +18,8 @@ exit 1
 #export TESTSUITE_DEFAULT_BRANCH="master"
 #export TESTSUITE_BUILD_CONF="generic"
 #export TESTSUITE_MODULE="functest"     # the only meaningful value
-#export TESTSUITE_SCRIPT="functional"   # the only meaningful value
 #export TESTSUITE_CONF_URL=${CONF_URL}
+#export TESTSUITE_CONF_BRANCH=HEAD  # in the dbscripts notation, i.e. HEAD^config_rework
 #export TESTSUITE_SUITES="build_variations basic"
 #export TESTSUITE_REQUIRED_SUITES="build_variations"  # those suites will be automatically added if not mentioned
 

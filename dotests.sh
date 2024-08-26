@@ -21,7 +21,8 @@ function build_test_and_report() {
     cd testsuite || fatal_error "no testsuite directory for some reason" $PWD/fulllog.txt
 
     # Bootstraping the testsuite
-    ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" &>> ../fulllog.log || fatal_error "./bootstrap.sh execution failed" $PWD/../fulllog.log
+    local conf_branch=${TESTSUITE_CONF_BRANCH:=HEAD}
+    ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" "$conf_branch" &>> ../fulllog.log || fatal_error "./bootstrap.sh execution failed" $PWD/../fulllog.log
 
     # Making all downloads beforehand
     ./download.sh &>> ../fulllog.log || fatal_error "downloading stage failed (./download.sh)" $PWD/../fulllog.log
