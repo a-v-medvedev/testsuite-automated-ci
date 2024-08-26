@@ -20,6 +20,8 @@ function build_test_and_report() {
     #--- ENTER the testsuite directory
     cd testsuite || fatal_error "no testsuite directory for some reason" $PWD/fulllog.txt
 
+    [ -v DNB_PACKAGE_VERSIONS ] || export DNB_PACKAGE_VERSIONS
+
     # Bootstraping the testsuite
     local conf_branch=${TESTSUITE_CONF_BRANCH:=HEAD}
     ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" "$conf_branch" &>> ../fulllog.log || fatal_error "./bootstrap.sh execution failed" $PWD/../fulllog.log
