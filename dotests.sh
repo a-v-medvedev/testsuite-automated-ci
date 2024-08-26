@@ -13,7 +13,8 @@ function build_test_and_report() {
 
     # Clone the testsuite project
     [ -e testsuite ] && rm -rf testsuite
-    git clone --recursive "$TESTSUITE_URL" >& fulllog.log || fatal_error "error cloning testsuite repository" $PWD/fulllog.txt
+    local branch=${TESTSUITE_TESTSUITE_BRANCH:=master}
+    git clone --recursive "$TESTSUITE_TESTSUITE_URL" --depth 1 --single-branch --branch "$branch" >& /dev/null || fatal_error "error cloning testsuite repository" $PWD/fulllog.txt
 
     #-------------------------------------------------------------------
     #--- ENTER the testsuite directory

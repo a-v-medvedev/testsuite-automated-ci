@@ -8,7 +8,8 @@ exit 1
 
 #PROJECT_URL="https://...git"   # Example: "https://github.com/a-v-medvedev/teststub.git"
 #CONF_URL="https://...git"      # Example: "https://github.com/a-v-medvedev/testsuite_confs.git"
-#TESTSUITE_URL="https://github.com/a-v-medvedev/testsuite.git"
+#TESTSUITE_TESTSUITE_URL="https://github.com/a-v-medvedev/testsuite.git"
+#TESTSUITE_BRANCH_URL="master"
 
 #export TESTSUITE_AVAILABLE_HWCONFS="machine1 machine2"
 #export TESTSUITE_HWCONF="..."   # default hwconf. Empty if there is default 
