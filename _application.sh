@@ -17,7 +17,6 @@ exit 1
 #export TESTSUITE_PROJECT="..."  # Example: "teststub"
 #export TESTSUITE_DEFAULT_BRANCH="master"
 #export TESTSUITE_BUILD_CONF="generic"
-#export TESTSUITE_MODULE="functest"     # the only meaningful value
 #export TESTSUITE_CONF_URL=${CONF_URL}
 #export TESTSUITE_CONF_BRANCH=HEAD  # in the dbscripts notation, i.e. HEAD^config_rework
 #export TESTSUITE_SUITES="build_variations basic"

@@ -24,7 +24,7 @@ function build_test_and_report() {
 
     # Bootstraping the testsuite
     local conf_branch=${TESTSUITE_CONF_BRANCH:=HEAD}
-    ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$TESTSUITE_MODULE" "$conf_branch" &>> ../fulllog.log || fatal_error "./bootstrap.sh execution failed" $PWD/../fulllog.log
+    ./bootstrap.sh "$TESTSUITE_CONF_URL" "$TESTSUITE_PROJECT" "$conf_branch" &>> ../fulllog.log || fatal_error "./bootstrap.sh execution failed" $PWD/../fulllog.log
 
     # Making all downloads beforehand
     ./download.sh &>> ../fulllog.log || fatal_error "downloading stage failed (./download.sh)" $PWD/../fulllog.log
