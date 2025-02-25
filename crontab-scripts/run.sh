@@ -2,10 +2,38 @@
 
 # This script can be run from cron. Single argument is required, see below.
 
-. ~/.bashrc
-export PATH=$PATH:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+# NOTE: since we are running from cron, ensure in the crontab script that
+# we tuned the paths and environment correctly:
+#  . ~/.bashrc
+#  export PATH=$PATH:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+#
+# A typical crontab job script may llok like:
+#
+#---------
+# #!/bin/bash
+#
+# export PATH=<ENSURE APPROPRIATE PATH>
+# source $HOME/.bashrc
+# 
+# case "$1" in
+# request) cd FULL_PATH_TO_CI_DIR; nohup ./run.sh ./test_by_request.sh &>> crontab.log"; ;;
+# commit) cd FULL_PATH_TO_CI_DIR; nohup ./run.sh ./test_on_new_commits.sh &>> crontab.log"; ;;
+# *) ;;
+# esac
+#---------
+#
+# The typical crontab entry:
+#
+#---------
+# 9,19,29,39,49,59 * * * *    FULL_PATH_TO_CI_DIR/crontab-runner.sh commit
+# 0,5,10,15,20,25,30,35,40,45,50,55 * * * *    FULL_PATH_TO_CI_DIR/crontab-runner.sh request
+#---------
+#
 
+
+scriptwd="$PWD"
 LOCK="$HOME/lock"
+UPDATE_REQUIRED="$HOME/update_required"
 pid=""
 N=""
 cd $(dirname $0)
@@ -16,7 +44,7 @@ sleep $((1 + $RANDOM % 50))
 [ "$N" == "1" ] && exit 0
 if [ ! -z "$pid" ]; then
     for i in $(seq 1 1 10); do
-	sleep 1
+	    sleep 1
         [ ! -f "$LOCK" ] && pid="" && break
     done
     [ ! -z "$pid" ] && rm -f "$LOCK"
@@ -24,7 +52,6 @@ fi
 
 npaths=$(ls -1d *-automated-ci 2>/dev/null | wc -l)
 path="$PWD"
-scriptwd="$PWD"
 if [ "$npaths" == "1" ]; then
     if [ -d *-automated-ci ]; then
         path=${path}/*-automated-ci
@@ -46,7 +73,6 @@ source send_via_functestbot.sh
 source dotests.sh
 
 echo $$ > "$LOCK"
-UPDATE_REQUIRED="$HOME/update_required"
 if [ -f "$UPDATE_REQUIRED" ]; then
     if [ "$PWD" == $(cat "$UPDATE_REQUIRED") ]; then
         cd $scriptwd
@@ -66,6 +92,7 @@ if [ -f "$UPDATE_REQUIRED" ]; then
     fi
 fi
 
-# Args is: test_by_request.sh or test_on_new_commits.sh -- set one of them in crontab
+# The argument is: ./test_by_request.sh or ./test_on_new_commits.sh,  
+# set one of them in your crontab caller script
 $1
 rm -f "$LOCK"

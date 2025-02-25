@@ -21,7 +21,8 @@ git commit -am "Submodule added for testsuite-automated-ci."
 ```
 - Add symlinks and commit them:
 ```
-ln -s testsuite-automated-ci/crontab-scripts/*.sh .
+ln -s testsuite-automated-ci/crontab-scripts/run.sh .
+ln -s testsuite-automated-ci/crontab-scripts/update.sh .
 git commit -am "Symlinks for main scripts added."
 ```
 > NOTE: You don't have to put the `credentials.sh` file in the repository. You also can hold it by direct hand-copying it to the target machine for security reasons. Don't even try to put Slack API tokens to a public repositories: such actions are constantly tracked by Slack and result is consequences. Holding such info in closed private repository is up to you.
@@ -45,20 +46,27 @@ bash# ./run.sh ./test_by_request.sh
 bash#
 ```
 
-4. Add `crontab` records for periodical check of events:
+4. Make you own version of crontab-runner.sh script (use `_crontab_runner.sh` as a template):
 
 ```
-SHELL=/bin/bash
-MAILTO=<username>
-* * * * *    $WORKING_DIR/run.sh ./test_on_new_commits.sh
-* * * * *    $WORKING_DIR/run.sh ./test_by_request.sh
-```
+bash# cd <DIRECTORY-OF-CLONED-PROJECT>
+bash# cp testsuite-automated-ci/_crontab-runner.sh crontab-runner.sh
+bash# vim crontab-runner.sh
+bash# git add crontab-runner.sh
+bash# git commit -am "Crontab runner script added."
 
-5. Check if `testsuite` starts on new commits 
+
+5. Add `crontab` records for periodical check of events. Use the `_crontab-runner.sh` file comments as a reference:
+
+bash# crontab -e
+<insert crontab events>
+bash#
+
+6. Check if `testsuite` starts on new commits 
 
 Check if scripting starts after some new commits to the target project branch (which is set up in `application.sh`).
 
-6. Check if `testsuite` starts by request 
+7. Check if `testsuite` starts by request 
 
 If you explicitely request test from a Telegram or Slack chat, check that scripting really starts and reports results.
 
