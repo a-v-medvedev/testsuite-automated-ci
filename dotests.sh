@@ -40,14 +40,14 @@ function build_test_and_report() {
     [ -z "$TESTSUITE_HWCONF" ] || machine="\n- Machine: *$TESTSUITE_HWCONF*"
     local msg=\
 "Functest started with timestamp *$timestamp* for application: *$TESTSUITE_PROJECT*.\n\
-- Branch: *$BRANCH*\n\
+- Branch: *$TESTSUITE_BRANCH*\n\
 - Changeset: *$revision*\n\
 - Reason is: $reason$machine"
     send_msg_via_functestbot "$msg"
 
 
     # Do all build and test actions
-    ./testall.sh "$TESTSUITE_SUITES" &>> ../fulllog.log
+    ./testall.sh "$TESTSUITE_BRANCH" "$TESTSUITE_SUITES" &>> ../fulllog.log
 
     #--- LEAVE the testsuite directory
     cd ..
