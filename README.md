@@ -54,13 +54,15 @@ bash# cp testsuite-automated-ci/_crontab-runner.sh crontab-runner.sh
 bash# vim crontab-runner.sh
 bash# git add crontab-runner.sh
 bash# git commit -am "Crontab runner script added."
-
+```
 
 5. Add `crontab` records for periodical check of events. Use the `_crontab-runner.sh` file comments as a reference:
 
+```
 bash# crontab -e
 <insert crontab events>
 bash#
+```
 
 6. Check if `testsuite` starts on new commits 
 
