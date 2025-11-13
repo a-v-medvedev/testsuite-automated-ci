@@ -40,25 +40,68 @@ send_message() {
 
 send_file() {
     local file=$1
-    local action="files.upload"
+    local filename=$(basename "$file")
+    local filesize=$(stat -c%s "$file")
+    local mimetype=$(file -b --mime-type "$file")
+
+    # Step 1: Get an external upload URL
+    local req_json=$(jq -n \
+        --arg name "$filename" \
+        --argjson size "$filesize" \
+        --arg type "$mimetype" \
+        '{filename: $name, length: $size, mimetype: $type}')
+    local upload_init=$(curl -s -X POST \
+        -H "Authorization: Bearer $APITOKEN" \
+        -H "Content-Type: application/json" \
+        -d "{\"files\":[$req_json]}" \
+        "https://slack.com/api/files.getUploadURLExternal")
+    check_error "$upload_init"
+
+    local upload_url=$(echo "$upload_init" | jq -r '.files[0].upload_url')
+    local file_id=$(echo "$upload_init" | jq -r '.files[0].id')
+
+    # Step 2: Upload the actual file to the returned URL
+    curl -s -X PUT -H "Content-Type: $mimetype" --upload-file "$file" "$upload_url" > /dev/null
+
+    # Step 3: Complete the upload
     local thread=""
-    [ -f "$HOME/.thread" ] && thread="{\"thread_ts\":\"$(cat $HOME/.thread)\"}"
-    local x
-    if [ -z "$thread" ]; then
-        x=$(curl -s -F file=@$file \
-                      -F channels=$CHATID \
-                      -F token=$APITOKEN \
-                      "https://slack.com/api/$action")
-    else
-        x=$(curl -s -F file=@$file \
-                      -F channels=$CHATID \
-                      -F token=$APITOKEN \
-                      -F "thread_ts=$thread" \
-                      "https://slack.com/api/$action")
-    fi
-    check_error "$x"
-    echo $x
+    [ -f "$HOME/.thread" ] && thread=$(cat "$HOME/.thread")
+    local complete_json=$(jq -n \
+        --arg id "$file_id" \
+        --arg channel "$CHATID" \
+        --arg thread_ts "$thread" \
+        'if $thread_ts == "" then {files: [{id: $id}], channel_id: $channel} else {files: [{id: $id}], channel_id: $channel, thread_ts: $thread_ts} end')
+    local complete=$(curl -s -X POST \
+        -H "Authorization: Bearer $APITOKEN" \
+        -H "Content-Type: application/json" \
+        -d "$complete_json" \
+        "https://slack.com/api/files.completeUploadExternal")
+    check_error "$complete"
+
+    echo "$complete"
 }
+
+# send_file() {
+#     local file=$1
+#     local action="files.upload"
+#     local thread=""
+#     [ -f "$HOME/.thread" ] && thread="{\"thread_ts\":\"$(cat $HOME/.thread)\"}"
+#     local x
+#     if [ -z "$thread" ]; then
+#         x=$(curl -s -F file=@$file \
+#                       -F channels=$CHATID \
+#                       -F token=$APITOKEN \
+#                       "https://slack.com/api/$action")
+#     else
+#         x=$(curl -s -F file=@$file \
+#                       -F channels=$CHATID \
+#                       -F token=$APITOKEN \
+#                       -F "thread_ts=$thread" \
+#                       "https://slack.com/api/$action")
+#     fi
+#     check_error "$x"
+#     echo $x
+# }
 
 # Function to retrieve messages from Slack channel
 get_messages() {
