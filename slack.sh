@@ -43,51 +43,42 @@ send_file() {
     local filename=$(basename "$file")
     local filesize=$(stat -c%s "$file")
     local mimetype=$(file -b --mime-type "$file")
+    local do_post=false
 
-    # Step 1: Get an external upload URL
-#    local req_json=$(jq -n \
-#        --arg name "$filename" \
-#        --argjson size "$filesize" \
-#        --arg type "$mimetype" \
-#        '{filename: $name, length: $size, mimetype: $type}')
-    local upload_init=$(curl -s -X POST \
-        -H "Authorization: Bearer $APITOKEN" \
-        --form "filename=\"$filename\"" --form "length=\"$filesize\"" \
-        "https://slack.com/api/files.getUploadURLExternal")
-    check_error "$upload_init"
+    case $mimetype in
+    text/*) do_post=true;;
+    esac
 
-    local upload_url=$(echo "$upload_init" | jq -r '.upload_url')
-    local file_id=$(echo "$upload_init" | jq -r '.file_id')
-
-    # Step 2: Upload the actual file to the returned URL
-    curl -v -s -X PUT -H "Content-Type: $mimetype" --upload-file "$file" "$upload_url"
-
-    # Step 3: Complete the upload
     local thread=""
     [ -f "$HOME/.thread" ] && thread="--form thread_ts=\"$(cat "$HOME/.thread")\""
- #   local complete_json=$(jq -n \
- #       --arg id "$file_id" \
- #       --arg channel "$CHATID" \
- #       --arg thread_ts "$thread" \
- #       'if $thread_ts == "" then {files: [{id: $id}], channel_id: $channel} else {files: [{id: $id}], channel_id: $channel, thread_ts: $thread_ts} end')
-    local complete=$(curl -s -X POST \
-        -H "Authorization: Bearer $APITOKEN" \
-        --form "files=\"[{\\\"title\\\":\\\"$filename\\\", \\\"id\\\":\\\"$file_id\\\"}]\"" --form "channel_id=\"$CHATID\"" --form "initial_comment=\"Attached file: $filename\"" $thread \
-        "https://slack.com/api/files.completeUploadExternal")
-    check_error "$complete"
 
-# --form 'files="[{\"title\":\"Hello file\", \"id\":\"F012AB3CDE4\"}]"' \
-# --form 'channel_id="C0123AB4CDE"' \
-# --form 'initial_comment="Hello file"'
-
-   complete=$(curl -X POST -H "Authorization: Bearer $APITOKEN" \
-     --form 'channel="'$CHATID'"' \
-     --form 'text="File uploaded: '$filename'"' \
-     --form "blocks=[{\"type\":\"file\",\"external_id\":\"$file_id\",\"source\":\"remote\"}]" $thread \
-     https://slack.com/api/chat.postMessage)
-
-
-    echo "$complete"
+    if [ "$do_post" == "true" ]; then
+      local contents="$(echo -ne '\n```\n\n')$(cat $file | sed 's/`/\`/g') $(echo -ne '\n```\n\n')"
+      local status=$(curl -X POST -H "Authorization: Bearer $APITOKEN" \
+        --form 'channel="'$CHATID'"' \
+        --form 'text=File contents: '"$filename $contents" --form "mrkdwn=true" $thread \
+        https://slack.com/api/chat.postMessage)
+      check_error "$status"
+      echo "$status"
+    else
+      local saved
+      if [ -e files_storage ]; then
+        local sd=$(readlink files_storage)
+        [ -d $sd ] && { saved=$sd/$filename; cp $file $saved; }
+      fi
+      local message
+      if [ -z "$saved" ]; then
+        message="The realted file: $file, try to locate it somewhere around $PWD"
+      else
+        message="The related file: $saved"
+      fi
+      local status=$(curl -X POST -H "Authorization: Bearer $APITOKEN" \
+        --form 'channel="'$CHATID'"' \
+        --form 'text='"$message" $thread \
+        https://slack.com/api/chat.postMessage)
+      check_error "$status"
+      echo "$status"
+    fi
 }
 
 # send_file() {
