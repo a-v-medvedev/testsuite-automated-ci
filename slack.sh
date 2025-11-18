@@ -51,21 +51,21 @@ send_file() {
 
     local thread=""
     [ -f "$HOME/.thread" ] && thread="--form thread_ts=\"$(cat "$HOME/.thread")\""
-
+    local saved
+    if [ -e files_storage ]; then
+      local sd=$(readlink files_storage)
+      [ -d $sd ] && { saved=$sd/$filename; cp $file $saved; }
+    fi
     if [ "$do_post" == "true" ]; then
-      local contents="$(echo -ne '\n```\n\n')$(cat $file | sed 's/`/\`/g') $(echo -ne '\n```\n\n')"
+      local contents="$(echo -ne 'text=File contents: '$filename'\001```\001')$(head -n22 $file | sed 's/`/\`/g')$(echo -ne '\001...skipped...\001')$(tail -n22 $file | sed 's/`/\`/g')$(echo -ne '\001```\001\001')"
+      local contents_=$(echo "$contents" | tr '\001' '\n')
       local status=$(curl -X POST -H "Authorization: Bearer $APITOKEN" \
         --form 'channel="'$CHATID'"' \
-        --form 'text=File contents: '"$filename $contents" --form "mrkdwn=true" $thread \
+        --form "$contents_" $thread \
         https://slack.com/api/chat.postMessage)
       check_error "$status"
       echo "$status"
     else
-      local saved
-      if [ -e files_storage ]; then
-        local sd=$(readlink files_storage)
-        [ -d $sd ] && { saved=$sd/$filename; cp $file $saved; }
-      fi
       local message
       if [ -z "$saved" ]; then
         message="The realted file: $file, try to locate it somewhere around $PWD"
