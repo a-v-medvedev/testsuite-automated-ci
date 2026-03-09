@@ -5,6 +5,7 @@
 [ -z "$APITOKEN" ] && echo "APITOKEN variable is not defined in credentials.sh" && exit 1
 
 check_error() {
+    [ -z "$1" ] && { echo ">> API ERROR: empty response from curl"; exit 1; }
     [ "$(echo $1 | jq -r .ok)" == "false" ] && { echo ">> API ERROR:" $(echo "$1" | jq -r ".error"); exit 1; }
 }
 
@@ -59,7 +60,7 @@ send_file() {
     if [ "$do_post" == "true" ]; then
       local contents="$(echo -ne 'text=File contents: '$filename'\001```\001')$(head -n22 $file | sed 's/`/\`/g')$(echo -ne '\001...skipped...\001')$(tail -n22 $file | sed 's/`/\`/g')$(echo -ne '\001```\001\001')"
       local contents_=$(echo "$contents" | tr '\001' '\n')
-      local status=$(curl -X POST -H "Authorization: Bearer $APITOKEN" \
+      local status=$(curl -s -X POST -H "Authorization: Bearer $APITOKEN" \
         --form 'channel="'$CHATID'"' \
         --form "$contents_" $thread \
         https://slack.com/api/chat.postMessage)
@@ -72,7 +73,7 @@ send_file() {
       else
         message="The related file: $saved"
       fi
-      local status=$(curl -X POST -H "Authorization: Bearer $APITOKEN" \
+      local status=$(curl -s -X POST -H "Authorization: Bearer $APITOKEN" \
         --form 'channel="'$CHATID'"' \
         --form 'text='"$message" $thread \
         https://slack.com/api/chat.postMessage)

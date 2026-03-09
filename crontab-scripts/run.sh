@@ -30,7 +30,6 @@
 #---------
 #
 
-
 scriptwd="$PWD"
 LOCK="$HOME/lock"
 UPDATE_REQUIRED="$HOME/update_required"
