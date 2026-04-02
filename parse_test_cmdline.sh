@@ -64,7 +64,7 @@ function parse_test_cmdline() {
 		export TESTSUITE_BRANCH="$revision"
 	else
 		[ -z "$BRANCH" ] && BRANCH=$TESTSUITE_DEFAULT_BRANCH
-		revision=$(git ls-remote --heads "$PROJECT_URL" | grep "$BRANCH" | awk '{print $1}')
+		revision=$(git ls-remote --heads "$PROJECT_URL" "refs/heads/$BRANCH" | awk '{print $1}')
         [ -z "$revision" ] && revision=$(git ls-remote --tags "$PROJECT_URL" "refs/tags/$BRANCH" | awk '{print $1}')
         [ -z "$revision" ] && revision=$(git ls-remote --tags "$PROJECT_URL" "refs/tags/$BRANCH^{}" | awk '{print $1}')
 		[ -z "$revision" ] && fatal "*ERROR:* Can't find branch or tag $BRANCH in the project."
