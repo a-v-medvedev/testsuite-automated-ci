@@ -47,7 +47,7 @@ function build_test_and_report() {
 
 
     # Do all build and test actions
-    ./testall.sh "$TESTSUITE_BRANCH" "$TESTSUITE_SUITES" &>> ../fulllog.log
+    ./testall.sh "$TESTSUITE_SUITES" "$TESTSUITE_BRANCH" &>> ../fulllog.log
 
     #--- LEAVE the testsuite directory
     cd ..
